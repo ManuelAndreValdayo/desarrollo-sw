@@ -5,111 +5,188 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Comparación jQuery vs JavaScript</title>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Afacad+Flux:wght@100..1000&family=Jaro:opsz@6..72&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
     <style>
-        html{
-            font-family: "Afacad Flux", serif;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
         body {
-            margin: 0;
-            display: flex;
-        }
-        .container {
-            width: 50%;
-            height: 100vh;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 2px solid black;
+            height: 100vh;
+            background: #f4f4f4;
         }
+        .container {
+            display: flex;
+            width: 90%;
+            max-width: 1000px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .panel {
+            width: 50%;
+            padding: 20px;
+            text-align: center;
+        }
+        .jquery { background: #1e88e5; color: white; }
+        .javascript { background: #ff7043; color: white; }
+        h2 { margin-bottom: 15px; }
         .box {
             width: 100px;
             height: 100px;
-            margin: 10px;
+            margin: 10px auto;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             font-weight: bold;
-            color: white;
+            border-radius: 5px;
         }
-        #jquery-box { background: blue; }
-        #js-box { background: red; }
+        #jquery-box { background: #1565c0; }
+        #js-box { background: #e64a19; }
         button {
-            margin-top: 10px;
-            padding: 8px;
+            margin: 8px;
+            padding: 10px 15px;
+            font-size: 16px;
+            border: none;
             cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
         }
+        .jquery button { background: #64b5f6; color: white; }
+        .javascript button { background: #ff8a65; color: white; }
+        button:hover { opacity: 0.8; }
         ul {
             list-style: none;
             padding: 0;
+            margin-top: 10px;
+        }
+        li {
+            padding: 5px;
+            background: white;
+            color: black;
+            margin: 5px;
+            border-radius: 3px;
+        }
+        #jquery-list{
+            max-height: 150px; 
+            overflow-y: auto;
+        }
+        
+        #js-list { 
+            max-height: 150px; 
+            overflow-y: hidden;
+            transition: max-height 0.5s ease-in-out;
         }
     </style>
 </head>
 <body>
 
-    <!-- jQuery Container -->
     <div class="container">
-        <h2>jQuery</h2>
-        <div id="jquery-box" class="box">Click</div>
-        <button id="jquery-add">Agregar Item</button>
-        <button id="jquery-toggle">Mostrar/Ocultar Lista</button>
-        <ul id="jquery-list">
-            <li>Item 1</li>
-        </ul>
-    </div>
+        <!-- Panel jQuery -->
+        <div class="panel jquery">
+            <h2>jQuery</h2>
+            <div id="jquery-box" class="box">Click</div>
+            <button id="jquery-add">Agregar Item</button>
+            <button id="jquery-remove">Eliminar Último Item</button>
+            <button id="jquery-toggle">Mostrar/Ocultar Lista</button>
+            <button id="jquery-ajax">Cargar Datos (AJAX)</button>
+            <ul id="jquery-list"><li>Item 1</li></ul>
+        </div>
 
-    <!-- JavaScript Puro Container -->
-    <div class="container">
-        <h2>JavaScript Puro</h2>
-        <div id="js-box" class="box">Click</div>
-        <button id="js-add">Agregar Item</button>
-        <button id="js-toggle">Mostrar/Ocultar Lista</button>
-        <ul id="js-list">
-            <li>Item 1</li>
-        </ul>
+        <!-- Panel JavaScript Puro -->
+        <div class="panel javascript">
+            <h2>JavaScript Puro</h2>
+            <div id="js-box" class="box">Click</div>
+            <button id="js-add">Agregar Item</button>
+            <button id="js-remove">Eliminar Último Item</button>
+            <button id="js-toggle">Mostrar/Ocultar Lista</button>
+            <button id="js-ajax">Cargar Datos (AJAX)</button>
+            <ul id="js-list"><li>Item 1</li></ul>
+        </div>
     </div>
 
     <script>
         // jQuery
         $(document).ready(function() {
-            // Cambiar color al hacer click
+            // 1️⃣ Cambio de color al hacer click
             $("#jquery-box").click(function() {
-                $(this).css("background", "green");
+                $(this).css("background", "#43a047");
             });
 
-            // Agregar item a la lista
+            // 2️⃣ Agregar elemento a la lista
             $("#jquery-add").click(function() {
                 $("#jquery-list").append("<li>Nuevo Item</li>");
             });
 
-            // Mostrar/Ocultar lista
+            // 3️⃣ Eliminar el último elemento de la lista
+            $("#jquery-remove").click(function() {
+                $("#jquery-list li:last-child").remove();
+            });
+
+            // 4️⃣ Mostrar/Ocultar lista
             $("#jquery-toggle").click(function() {
-                $("#jquery-list").toggle();
+                let list = $("#jquery-list");
+                if (list.is(":visible")) {
+                    list.slideUp();
+                } else {
+                    list.slideDown();
+                }            
+            });
+
+            // 5️⃣ AJAX - Cargar datos de una API
+            $("#jquery-ajax").click(function() {
+                $.get("https://jsonplaceholder.typicode.com/posts/1", function(data) {
+                    alert("Título: " + data.title);
+                });
             });
         });
 
         // JavaScript Puro
         document.addEventListener("DOMContentLoaded", function() {
-            // Cambiar color al hacer click
+            // 1️⃣ Cambio de color al hacer click
             document.getElementById("js-box").addEventListener("click", function() {
-                this.style.background = "green";
+                this.style.background = "#43a047";
             });
 
-            // Agregar item a la lista
+            // 2️⃣ Agregar elemento a la lista
             document.getElementById("js-add").addEventListener("click", function() {
                 let newItem = document.createElement("li");
                 newItem.textContent = "Nuevo Item";
                 document.getElementById("js-list").appendChild(newItem);
             });
 
-            // Mostrar/Ocultar lista
-            document.getElementById("js-toggle").addEventListener("click", function() {
+            // 3️⃣ Eliminar el último elemento de la lista
+            document.getElementById("js-remove").addEventListener("click", function() {
                 let list = document.getElementById("js-list");
-                list.style.display = (list.style.display === "none" || list.style.display === "") ? "block" : "none";
+                if (list.lastElementChild) {
+                    list.removeChild(list.lastElementChild);
+                }
+            });
+
+            // 4️⃣ Mostrar/Ocultar lista
+            document.getElementById("js-toggle").addEventListener("click", function() {
+                let element = document.getElementById("js-list");
+                let maxHeight = element.scrollHeight + "px";  // Altura total del contenido
+                if(element.getBoundingClientRect().height === 0) {
+                    element.style.maxHeight = maxHeight;
+                    setTimeout(() => element.style.overflow = "visible", 500); 
+                } else {
+                    element.style.maxHeight = "0px";
+                    element.style.overflow = "hidden";
+                }
+            });
+
+            // 5️⃣ AJAX - Cargar datos de una API
+            document.getElementById("js-ajax").addEventListener("click", function() {
+                fetch("https://jsonplaceholder.typicode.com/posts/1")
+                    .then(response => response.json())
+                    .then(data => alert("Título: " + data.title));
             });
         });
     </script>
